@@ -41,5 +41,6 @@ namespace MyChurch.Web.Data.Entities
 
         public Mentor Mentor { get; set; }
         public Ministry Ministry{ get; set; }
+        public Disciple Disciple { get; set; }
     }
 }
