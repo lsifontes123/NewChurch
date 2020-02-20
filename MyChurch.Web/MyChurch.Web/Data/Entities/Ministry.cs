@@ -29,7 +29,7 @@ namespace MyChurch.Web.Data.Entities
 
         [Display(Name = "Biblical Word")]
         [Required(ErrorMessage = "The field {0} is mandatory.")]
-        public int BiblicalWord{ get; set; }
+        public string BiblicalWord{ get; set; }
         [Display(Name = "Meet Start Date")]
         [Required(ErrorMessage = "The field {0} is mandatory.")]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
