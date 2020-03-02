@@ -14,10 +14,16 @@ namespace MyChurch.Web.Data.Entities
         [Required(ErrorMessage = "The field {0} is mandatory.")]
         public string Location { get; set; }
 
+        [Display(Name = "Name")]
+        [MaxLength(50, ErrorMessage = "The {0} field can not have more than {1} characters.")]
+       [Required(ErrorMessage = "The field {0} is mandatory.")]
+       public string Name { get; set; }
+
         [Display(Name = "Funds")]
         [Required(ErrorMessage = "The field {0} is mandatory.")]
         [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
         public decimal Fund { get; set; }
+       
 
         [Display(Name = "Leader")]
         [Required(ErrorMessage = "The field {0} is mandatory.")]
@@ -51,19 +57,25 @@ namespace MyChurch.Web.Data.Entities
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime EndDateLocal => MeetEndDate.ToLocalTime();
 
+       [Display(Name = "image")]
+        public string ImageUrl { get; set; }
+
         [Display(Name = "Is Available?")]
         public bool IsAvailable { get; set; }
 
         public string Remark { get; set; }
 
-        public MinistryType MinistryType { get; set; }
+        public MinistryType MinistryType { get; set; }  
         public Mentor Mentor { get; set; }
 
         public Disciple Disciple { get; set; }
 
-        public MinistryImage MinistryImage { get; set; }
+        public ICollection<FollowUpHistory> FollowUpHistories { get; set; }
 
-        public ICollection<ChurchEvent> ChurchEvents { get; set; }
-
+        public Admin Admin { get; set; }
+        //TODO: replace the correct URL for the image
+        public string ImageFullPath => string.IsNullOrEmpty(ImageUrl)
+           ? null
+            : $"https://TDB.azurewebsites.net{ImageUrl.Substring(1)}";
     }
 }

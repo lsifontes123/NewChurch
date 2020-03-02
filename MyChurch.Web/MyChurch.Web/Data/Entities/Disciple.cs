@@ -9,10 +9,8 @@ namespace MyChurch.Web.Data.Entities
 
         public User User { get; set; }
 
-        public ICollection<Ministry> Ministries { get; set; }
-
-        public ICollection<MemberImage> MemberImages{ get; set; }
         public ICollection<ChurchEvent> ChurchEvents { get; set; }
+        
     }
 }
 

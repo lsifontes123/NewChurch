@@ -26,38 +26,16 @@ namespace MyChurch.Web.Data
         {
             await _context.Database.EnsureCreatedAsync();
             await CheckRoles();
-            var admin = await CheckUserAsync("1010", "Juan", "Zuluaga", "jzuluaga55@gmail.com", "350 634 2747", "Calle Luna Calle Sol", "Manager");
-            var mentor = await CheckUserAsync("2020", "Juan", "Zuluaga", "jzuluaga55@hotmail.com", "350 634 2747", "Calle Luna Calle Sol", "Owner");
-            var disciple = await CheckUserAsync("2020", "Juan", "Zuluaga", "carlos.zuluaga@globant.com", "350 634 2747", "Calle Luna Calle Sol", "Lessee");
+            var admin = await CheckUserAsync("1010", "Juan", "Zuluaga", "jzuluaga55@gmail.com", "350 634 2747", "Calle Luna Calle Sol", "Admin");
+            var mentor = await CheckUserAsync("2020", "Juan", "Zuluaga", "jzuluaga55@hotmail.com", "350 634 2747", "Calle Luna Calle Sol", "Mentor");
+            var disciple = await CheckUserAsync("2020", "Juan", "Zuluaga", "carlos.zuluaga@globant.com", "350 634 2747", "Calle Luna Calle Sol", "Disciple");
             await CheckMinistryTypesAsync();
             await CheckAdminsAsync(admin);
             await CheckMentorsAsync(mentor);
             await CheckDisciplesAsync(disciple);
             await CheckMinistriesAsync();
             await CheckChurchEventsAsync();
-        }
-
-        private async Task CheckChurchEventsAsync()
-        {
-            var mentor = _context.Mentors.FirstOrDefault();
-            var disciple = _context.Disciples.FirstOrDefault();
-            var ministry = _context.Ministries.FirstOrDefault();
-            if (!_context.ChurchEvents.Any())
-            {
-                _context.ChurchEvents.Add(new ChurchEvent
-                {
-                    StartDate = DateTime.Today,
-                    EndDate = DateTime.Today.AddYears(1),
-                    IsActive = true,
-                    Disciple =disciple,
-                    Mentor = mentor,
-                    Price = 800000M,
-                    Ministry = ministry,
-                    Remarks = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris nec iaculis ex. Nullam gravida nunc eleifend, placerat tellus a, eleifend metus. Phasellus id suscipit magna. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam volutpat ultrices ex, sed cursus sem tincidunt ut. Nullam metus lorem, convallis quis dignissim quis, porttitor quis leo. In hac habitasse platea dictumst. Duis pharetra sed arcu ac viverra. Proin dapibus lobortis commodo. Vivamus non commodo est, ac vehicula augue. Nam enim felis, rutrum in tortor sit amet, efficitur hendrerit augue. Cras pellentesque nisl eu maximus tempor. Curabitur eu efficitur metus. Sed ultricies urna et auctor commodo."
-                });
-
-                await _context.SaveChangesAsync();
-            }
+            await CheckServiceTypesAsync();
         }
 
         private async Task CheckAdminsAsync(User user)
@@ -67,6 +45,12 @@ namespace MyChurch.Web.Data
                 _context.Admins.Add(new Admin { User = user });
                 await _context.SaveChangesAsync();
             }
+        }
+        private async Task CheckRoles()
+        {
+            await _userHelper.CheckRoleAsync("Admin");
+            await _userHelper.CheckRoleAsync("Mentor");
+            await _userHelper.CheckRoleAsync("Disciple");
         }
 
         private async Task<User> CheckUserAsync(string document, string firstName, string lastName, string email, string phone, string address, string role)
@@ -93,12 +77,7 @@ namespace MyChurch.Web.Data
         }
 
 
-        private async Task CheckRoles()
-        {
-            await _userHelper.CheckRoleAsync("Admin");
-            await _userHelper.CheckRoleAsync("Mentor");
-            await _userHelper.CheckRoleAsync("Disciple");
-        }
+
 
         private async Task CheckDisciplesAsync(User user)
         {
@@ -111,12 +90,12 @@ namespace MyChurch.Web.Data
 
         private async Task CheckMinistriesAsync()
         {
-            var mentor = _context.Mentors.FirstOrDefault();
+            var admin = _context.Admins.FirstOrDefault();
             var ministryType = _context.MinistryTypes.FirstOrDefault();
             if (!_context.Ministries.Any())
             {
-                AddMinistry("Calle 43 #23 32", "Poblado","fdsfsdfsdf", mentor, ministryType, 800000M, "blah blah");
-                AddMinistry("Calle 12 Sur #2 34", "Envigado", "gsfdgdgsfgs", mentor, ministryType, 950000M, "blahBlah");
+                AddMinistry("Calle 43 #23 32", "Poblado", "fdsfsdfsdf", admin, ministryType, 800000M, "blah blah","verde");
+                AddMinistry("Calle 12 Sur #2 34", "Envigado", "gsfdgdgsfgs", admin, ministryType, 950000M, "blahBlah","rojo");
                 await _context.SaveChangesAsync();
             }
         }
@@ -125,9 +104,17 @@ namespace MyChurch.Web.Data
         {
             if (!_context.MinistryTypes.Any())
             {
-                _context.MinistryTypes.Add(new MinistryType { Name = "Apartamento" });
-                _context.MinistryTypes.Add(new MinistryType { Name = "Casa" });
-                _context.MinistryTypes.Add(new MinistryType  { Name = "Negocio" });
+                _context.MinistryTypes.Add(new MinistryType { Name = "Outreach Ministry" });
+                _context.MinistryTypes.Add(new MinistryType { Name = "General Fellowship" });
+                _context.MinistryTypes.Add(new MinistryType { Name = "Youth Fellowship" });
+                _context.MinistryTypes.Add(new MinistryType { Name = "Marriage Ministry" });
+                _context.MinistryTypes.Add(new MinistryType { Name = "Women's Ministry" });
+                _context.MinistryTypes.Add(new MinistryType { Name = "Men's Ministry" });
+                _context.MinistryTypes.Add(new MinistryType { Name = "Prayer Ministry" });
+                _context.MinistryTypes.Add(new MinistryType { Name = "HouseHold Ministry" });
+                _context.MinistryTypes.Add(new MinistryType { Name = "Childer Ministry" });
+                _context.MinistryTypes.Add(new MinistryType { Name = "Usher Ministry" });
+                _context.MinistryTypes.Add(new MinistryType { Name = "Worship Ministry" });
                 await _context.SaveChangesAsync();
             }
         }
@@ -144,24 +131,83 @@ namespace MyChurch.Web.Data
         private void AddMinistry(string location,
             string leader,
             string subLeader,
-            Mentor mentor,
+            Admin admin,
             MinistryType ministryType,
             decimal fund,
-            string biblicalWord)
+            string biblicalWord,
+            string name)
         {
             _context.Ministries.Add(new Ministry
             {
-
+                Name = name,
                 Location = location,
                 Leader = leader,
                 SubLeader = subLeader,
-                Mentor = mentor,
-                MinistryType = ministryType ,
+                Admin = admin,
+                MinistryType = ministryType,
                 BiblicalWord = biblicalWord,
                 IsAvailable = true,
                 Fund = fund
 
             });
+        }
+        private async Task CheckServiceTypesAsync()
+        {
+            if (!_context.ServiceTypes.Any())
+            {
+                _context.ServiceTypes.Add(new ServiceType { Name = "Consulta" });
+                _context.ServiceTypes.Add(new ServiceType { Name = "Urgencia" });
+                _context.ServiceTypes.Add(new ServiceType { Name = "Vacunación" });
+                await _context.SaveChangesAsync();
+            } }
+        private async Task CheckChurchEventsAsync()
+        {
+            var admin = _context.Admins.FirstOrDefault();
+            var mentor = _context.Mentors.FirstOrDefault();
+            var disciple = _context.Disciples.FirstOrDefault();
+            var ministry = _context.Ministries.FirstOrDefault();
+            var initialDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 8, 0, 0);
+            var finalDate = initialDate.AddYears(1);
+            if (!_context.ChurchEvents.Any())
+            {
+                while (initialDate < finalDate)
+                {
+                    if (initialDate.DayOfWeek != DayOfWeek.Sunday)
+                    {
+                        var finalDate2 = initialDate.AddHours(10);
+                        while (initialDate < finalDate2)
+                        {
+
+                            _context.ChurchEvents.Add(new ChurchEvent
+                            {
+                                Date = initialDate,
+                                StartDate = DateTime.Today,
+                                EndDate = DateTime.Today.AddYears(1),
+                                IsActive = true,
+                                Admin = admin,
+                                Disciple = disciple,
+                                Mentor = mentor,
+                                Price = 800000M,
+                                Ministry = ministry,
+                                Remarks = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris nec iaculis ex. Nullam gravida nunc eleifend, placerat tellus a, eleifend metus. Phasellus id suscipit magna. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam volutpat ultrices ex, sed cursus sem tincidunt ut. Nullam metus lorem, convallis quis dignissim quis, porttitor quis leo. In hac habitasse platea dictumst. Duis pharetra sed arcu ac viverra. Proin dapibus lobortis commodo. Vivamus non commodo est, ac vehicula augue. Nam enim felis, rutrum in tortor sit amet, efficitur hendrerit augue. Cras pellentesque nisl eu maximus tempor. Curabitur eu efficitur metus. Sed ultricies urna et auctor commodo."
+                            });
+                            initialDate = initialDate.AddMinutes(30);
+                        }
+                        initialDate = initialDate.AddHours(14);
+                    }
+                
+
+
+                     else
+                {
+                    initialDate = initialDate.AddDays(1);
+                }
+            }
+        }
+    
+
+                    await _context.SaveChangesAsync();
+            
         }
     }
 }

@@ -1,0 +1,49 @@
+﻿@model  MyChurch.Web.Models.MinistryViewModel
+@{
+    ViewData["Title"] = "EditMinistry";
+}
+
+<h2>EditMinistry</h2>
+
+
+<h4>Ministry</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditMinistry" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="AdminId" />
+            <input type="hidden" asp-for="ImageUrl" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImageFile" class="control-label"></label>
+                <input asp-for="ImageFile" class="form-control" type="file" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="MinistryTypeId" class="control-label"></label>
+                <select asp-for="MinistryTypeId" asp-items="Model.MinistryTypes" class="form-control"></select>
+                <span asp-validation-for="MinistryTypeId" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Details" asp-route-id="@Model.AdminId" class="btn btn-success">Back to Admin</a>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-4">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Url.Content(Model.ImageUrl)" alt="Image" style="width:400px;height:400px;max-width: 100%; height: auto;" />
+        }
+    </div>
+
+</div>

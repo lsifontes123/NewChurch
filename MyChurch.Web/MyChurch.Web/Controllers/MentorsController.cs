@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using MyChurch.Web.Data.Entities;
 
 namespace MyChurch.Web.Controllers
 {
+    [Authorize(Roles = "Mentor")]
     public class MentorsController : Controller
     {
         private readonly DataContext _context;
@@ -20,9 +22,9 @@ namespace MyChurch.Web.Controllers
         }
 
         // GET: Mentors
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Mentors.ToListAsync());
+            return View(_context.Mentors.Include(a => a.User));
         }
 
         // GET: Mentors/Details/5
@@ -54,7 +56,7 @@ namespace MyChurch.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Document,FirstName,LastName,FixedPhone,CellPhone,Address")] Mentor mentor)
+        public async Task<IActionResult> Create([Bind("Id")] Mentor mentor)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +88,7 @@ namespace MyChurch.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Document,FirstName,LastName,FixedPhone,CellPhone,Address")] Mentor mentor)
+        public async Task<IActionResult> Edit(int id, [Bind("Id")] Mentor mentor)
         {
             if (id != mentor.Id)
             {

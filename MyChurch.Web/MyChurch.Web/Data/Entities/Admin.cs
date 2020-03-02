@@ -10,5 +10,8 @@ namespace MyChurch.Web.Data.Entities
         public int Id { get; set; }
 
         public User User { get; set; }
+
+        public ICollection<Ministry> Ministries { get; set; }
+        public ICollection<ChurchEvent> ChurchEvents{ get; set; }
     }
 }
